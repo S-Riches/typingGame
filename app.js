@@ -10,16 +10,16 @@ const lightUpKeyboard = async (key) => {
         if (key == " ") {
             let selectedKey = document.getElementById("SPACE");
             selectedKey.style.backgroundColor = "darkgray";
-            console.log(selectedKey);
             selectedKey.style.backgroundColor = "darkgray";
             await sleep(500);
             selectedKey.style.backgroundColor = "#252323";
+            return await " ";
         } else {
             let selectedKey = document.getElementById(key);
-            console.log(selectedKey);
             selectedKey.style.backgroundColor = "darkgray";
             await sleep(500);
             selectedKey.style.backgroundColor = "#252323";
+            return await selectedKey.innerText.toLowerCase();
         }
     } catch (error) {
         console.log(error);
@@ -29,12 +29,12 @@ const lightUpKeyboard = async (key) => {
 // generate sentences.
 const generateWords = async () => {
     // use the fetch api to get the words from the words.txt file
-    let wordCollection = fetch("words.txt")
+    let wordCollection = await fetch("words.txt")
         .then((response) => response.text())
         .then((text) => {
             let words = text.split("\n");
             let wordCollection = [];
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 2; i++) {
                 wordCollection.push(
                     words[Math.floor(Math.random() * words.length)]
                 );
@@ -46,29 +46,68 @@ const generateWords = async () => {
 };
 
 // log words to the screen
-const logToScreen = async () => {
-    let wordsArr = await generateWords();
-    let wordsStr = wordsArr.join("_");
+const logToScreen = async (wordsArr) => {
+    let wordsStr = wordsArr.join(" ");
     const textBox = document.getElementById("textBox");
     textBox.innerText = wordsStr;
+    return wordsStr;
 };
 
-const charChecker = (keyPress, wordsStr) => {
-    for (let i = 0; i < wordsStr.length; i++) {}
+// this function moves the mark tag that is responsible for highlighting the individual characters.
+const moveMarkTag = async (wordsStr, count) => {
+    // firstly insert a mark tag with the green colour at the first character
+    wordsStr = `<span class="highlight" style="color: #069e2d;"> ${String(
+        wordsStr
+    ).substring(0, count + 1)} </span>`;
+    const inputBox = document.getElementById("inputBox");
+    inputBox.innerHTML = wordsStr;
 };
 
-logToScreen();
+const resetGame = () => {
+    const inputBox = document.getElementById("inputBox");
+    const textBox = document.getElementById("textBox");
+    textBox.innerText = "press space on your keyboard to reset!";
+    inputBox.innerText = "";
+    count = 0;
+    mistakes = 0;
+    window.removeEventListener("keyPress");
+};
 
-// logToScreen(generateWords());
-
-// register the key clicks
-window.addEventListener("keypress", (e) => {
-    // light up the keyboard on the screen
-    lightUpKeyboard(e.key.toUpperCase());
-});
+let count = 0;
+let mistakes = 0;
+// main function to run
+const mainLoop = async () => {
+    let wordsArr = await generateWords();
+    let wordsStr = await logToScreen(wordsArr);
+    const mistakesElement = document.getElementById("mistakes");
+    const charChecker = (keyPress) => {
+        if (count < wordsStr.length) {
+            if (keyPress == wordsStr[count]) {
+                console.log(keyPress, wordsStr[count]);
+                moveMarkTag(wordsStr, count);
+                count++;
+            } else {
+                mistakes++;
+                mistakesElement.innerText = `Mistakes : ${mistakes}`;
+            }
+        } else {
+            // moveMarkTag(wordsStr)
+            resetGame();
+            mainLoop();
+        }
+    };
+    // register the key clicks
+    window.addEventListener("keypress", (e) => {
+        // light up the keyboard on the screen
+        lightUpKeyboard(e.key.toUpperCase()).then((key) => {
+            charChecker(key);
+        });
+    });
+};
 
 // check that against the current character
 
 // if its a mistake increase mistakes
 
-// if its a sucess move onto the next character
+// if its a success move onto the next character
+mainLoop();
