@@ -10,14 +10,13 @@ const lightUpKeyboard = async (key) => {
         if (key == " ") {
             let selectedKey = document.getElementById("SPACE");
             selectedKey.style.backgroundColor = "darkgray";
-            selectedKey.style.backgroundColor = "darkgray";
-            await sleep(500);
+            await sleep(300);
             selectedKey.style.backgroundColor = "#252323";
             return await " ";
         } else {
             let selectedKey = document.getElementById(key);
             selectedKey.style.backgroundColor = "darkgray";
-            await sleep(500);
+            await sleep(300);
             selectedKey.style.backgroundColor = "#252323";
             return await selectedKey.innerText.toLowerCase();
         }
@@ -34,7 +33,7 @@ const generateWords = async () => {
         .then((text) => {
             let words = text.split("\n");
             let wordCollection = [];
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < 20; i++) {
                 wordCollection.push(
                     words[Math.floor(Math.random() * words.length)]
                 );
@@ -62,17 +61,6 @@ const moveMarkTag = async (wordsStr, count) => {
     const inputBox = document.getElementById("inputBox");
     inputBox.innerHTML = wordsStr;
 };
-
-const resetGame = () => {
-    const inputBox = document.getElementById("inputBox");
-    const textBox = document.getElementById("textBox");
-    textBox.innerText = "press space on your keyboard to reset!";
-    inputBox.innerText = "";
-    count = 0;
-    mistakes = 0;
-    window.removeEventListener("keyPress");
-};
-
 let count = 0;
 let mistakes = 0;
 // main function to run
@@ -91,9 +79,7 @@ const mainLoop = async () => {
                 mistakesElement.innerText = `Mistakes : ${mistakes}`;
             }
         } else {
-            // moveMarkTag(wordsStr)
-            resetGame();
-            mainLoop();
+            window.location.reload();
         }
     };
     // register the key clicks
@@ -105,9 +91,4 @@ const mainLoop = async () => {
     });
 };
 
-// check that against the current character
-
-// if its a mistake increase mistakes
-
-// if its a success move onto the next character
 mainLoop();

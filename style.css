@@ -26,10 +26,12 @@ h1 {
     padding: 1vw;
     border: 1px solid black;
     border-radius: 1vw;
-    width: 94%;
+    width: 95vw;
+    margin: auto;
     height: 30vh;
 }
 #textBox {
+    hyphens: auto;
     background-color: #0a090c;
     color: grey;
     font-size: 2rem;
